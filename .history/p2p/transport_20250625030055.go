@@ -1,0 +1,20 @@
+package p2p
+
+import "net"
+
+
+
+type Transport interface{
+    Addr() string 
+	Dial(string) error
+	ListenAndServe(string) error
+	Accept() (Peer, error)
+	Close() 
+}
+
+
+type Peer interface {
+	net.Conn
+
+	closeStream()
+}
