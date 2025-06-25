@@ -24,7 +24,12 @@ func (p *TCPPeer) closeStream() {
 }
 
 func (p *TCPPeer) Send(b []byte) error {
-
+	p.wg.Add(1)
+	defer p.wg.Done()
 	_, err := p.Conn.Write(b)
-	return err
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

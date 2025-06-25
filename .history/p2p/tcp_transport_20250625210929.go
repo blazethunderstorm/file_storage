@@ -15,16 +15,6 @@ func NewTCPPeer(conn net.Conn, outBound bool, wg *sync.WaitGroup) *TCPPeer {
 	return &TCPPeer{
 		Conn: conn,
 		outBound: outBound,
-		wg: &sync.WaitGroup{},
+		wg: wg,
 	}
-}
-
-func (p *TCPPeer) closeStream() {
-	p.wg.Done()
-}
-
-func (p *TCPPeer) Send(b []byte) error {
-
-	_, err := p.Conn.Write(b)
-	return err
 }
