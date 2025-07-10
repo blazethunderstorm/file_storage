@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/anthdm/foreverstore/p2p"
+	"github.com/blazethunderstorm/file_storage/p2p"
 )
 
 type FileServerOpts struct {
@@ -104,6 +104,7 @@ func (s *FileServer) Get(key string) (io.Reader, error) {
 	time.Sleep(time.Millisecond * 500)
 
 	for _, peer := range s.peers {
+
 		var fileSize int64
 		binary.Read(peer, binary.LittleEndian, &fileSize)
 

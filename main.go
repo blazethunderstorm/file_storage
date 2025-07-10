@@ -7,14 +7,14 @@ import (
 	"log"
 	"time"
 
-	"github.com/anthdm/foreverstore/p2p"
+	"github.com/blazethunderstorm/file_storage/p2p"
 )
 
 func makeServer(listenAddr string, nodes ...string) *FileServer {
 	tcptransportOpts := p2p.TCPTransportOpts{
 		ListenAddr:    listenAddr,
-		HandshakeFunc: p2p.NOPHandshakeFunc,
-		Decoder:       p2p.DefaultDecoder{},
+		HandshakeFunc: p2p.NOPHandShake,
+		Decoder:       &p2p.DefaultDecoder{},
 	}
 	tcpTransport := p2p.NewTCPTransport(tcptransportOpts)
 

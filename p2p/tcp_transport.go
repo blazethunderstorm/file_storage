@@ -10,19 +10,20 @@ import (
 
 type TCPPeer struct {
 	net.Conn
-	outBound bool
-	wg       *sync.WaitGroup
+	outbound bool
+
+	wg *sync.WaitGroup
 }
 
-func NewTCPPeer(conn net.Conn, outBound bool, wg *sync.WaitGroup) *TCPPeer {
+func NewTCPPeer(conn net.Conn, outbound bool) *TCPPeer {
 	return &TCPPeer{
 		Conn:     conn,
-		outBound: outBound,
+		outbound: outbound,
 		wg:       &sync.WaitGroup{},
 	}
 }
 
-func (p *TCPPeer) closeStream() {
+func (p *TCPPeer) CloseStream() {
 	p.wg.Done()
 }
 
@@ -68,18 +69,24 @@ func (t *TCPTransport) Dial(addr string) error {
 	if err != nil {
 		return err
 	}
+
 	go t.handleConn(conn, true)
+
 	return nil
 }
 
 func (t *TCPTransport) ListenAndAccept() error {
 	var err error
+
 	t.listener, err = net.Listen("tcp", t.ListenAddr)
 	if err != nil {
 		return err
 	}
+
 	go t.startAcceptLoop()
+
 	log.Printf("TCP transport listening on port: %s\n", t.ListenAddr)
+
 	return nil
 }
 
@@ -89,18 +96,24 @@ func (t *TCPTransport) startAcceptLoop() {
 		if errors.Is(err, net.ErrClosed) {
 			return
 		}
+
+		if err != nil {
+			fmt.Printf("TCP accept error: %s\n", err)
+		}
+
 		go t.handleConn(conn, false)
 	}
 }
 
 func (t *TCPTransport) handleConn(conn net.Conn, outbound bool) {
 	var err error
+
 	defer func() {
 		fmt.Printf("dropping peer connection: %s", err)
 		conn.Close()
 	}()
 
-	peer := NewTCPPeer(conn, outbound, nil)
+	peer := NewTCPPeer(conn, outbound)
 
 	if err = t.HandshakeFunc(peer); err != nil {
 		return
